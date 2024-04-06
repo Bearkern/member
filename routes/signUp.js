@@ -6,12 +6,12 @@ const { getAuth, createUserWithEmailAndPassword } = require('firebase/auth');
 const auth = getAuth(firebase);
 
 router.get('/', (req, res) => {
-  res.render('signup', { title: '註冊' });
+  res.render('signup', { title: '註冊', error: req.flash('error') });
 })
 
 router.post('/', (req, res) => {
   const { email, password, nickname } = req.body;
-  
+
   createUserWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const saveUser = {
@@ -23,28 +23,10 @@ router.post('/', (req, res) => {
       res.redirect('/signUp/success');
     })
     .catch((error) => {
-      console.log('error.message:', error.message);
+      const errorMessage = error.message;
+      req.flash('error', errorMessage)
       res.redirect('/signUp');
     })
-
-
-
-  // firebaseAuth.createUserWithEmailAndPassword(email, password)
-  //   .then((user) => {
-  //     const saveUser = {
-  //       email,
-  //       nickname,
-  //       uid: user.uid,
-  //     }
-  //     console.log('1');
-  //     firebaseDb.ref(`/users/${user.uid}`).set(saveUser);
-  //     console.log('2');
-  //     res.redirect('/signUp/success');
-  //   })
-  //   .catch((error) => {
-  //     console.log('error.message:', error.message);
-  //     res.redirect('/signUp');
-  //   })
 })
 
 router.get('/success', (req, res) => {
